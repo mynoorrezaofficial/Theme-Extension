@@ -138,9 +138,12 @@ body {
 
 #greeting-wrapper {
     position: absolute;
-    width: 450px; /* Match clock box width roughly */
-    height: 250px; /* Match clock box height roughly */
+    width: 320px;
+    height: 320px;
     pointer-events: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .info-pill {
@@ -156,13 +159,13 @@ body {
 }
 
 #greeting-pill {
-    top: -30px;
-    left: -20px;
+    top: 0;
+    left: 0;
 }
 
 #date-pill {
-    bottom: -30px;
-    right: -20px;
+    bottom: 0;
+    right: 0;
 }
 
 #greeting {
@@ -709,6 +712,23 @@ body {
     background: rgba(255, 255, 255, 0.1);
     border-color: var(--accent-color);
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.location-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--glass-border);
+    color: #fff;
+    padding: 12px 15px;
+    border-radius: 12px;
+    outline: none;
+    font-size: 0.9rem;
+    transition: 0.3s;
+}
+
+.location-input:focus {
+    border-color: var(--accent-color);
+    background: rgba(0, 0, 0, 0.4);
 }
 
 .upload-btn input {

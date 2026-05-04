@@ -165,15 +165,16 @@
                         <span class="chevron">▲</span>
                     </div>
                     <div id="search-panel" class="section-panel">
-                        <div class="setting-item">
+                        <div class="setting-item vertical">
                             <div>
-                                <p>Hide Microphone Icon</p>
-                                <p class="setting-desc">Remove mic from search bar</p>
+                                <label>Weather Location</label>
+                                <p class="setting-desc">Enter city (e.g. Dhaka)</p>
                             </div>
-                            <label class="switch">
-                                <input type="checkbox" id="hide-mic-toggle">
-                                <span class="slider"></span>
-                            </label>
+                            <div class="wallpaper-actions">
+                                <input type="text" id="weather-location-input" class="location-input" placeholder="Enter city..." list="location-suggestions">
+                                <button id="set-location-btn" class="action-btn" style="flex: 0 0 60px;">Set</button>
+                            </div>
+                            <datalist id="location-suggestions"></datalist>
                         </div>
                         <div class="setting-item">
                             <div>
@@ -195,16 +196,6 @@
                         <span class="chevron">▲</span>
                     </div>
                     <div id="clock-panel" class="section-panel">
-                        <div class="setting-item">
-                            <div>
-                                <p>Hide Clock</p>
-                                <p class="setting-desc">Hide the entire clock area</p>
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox" id="hide-clock-toggle">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
                         <div class="setting-item">
                             <div>
                                 <p>Digital Clock</p>
