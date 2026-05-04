@@ -120,27 +120,58 @@ async function updateWeather() {
         document.getElementById('temp').textContent = Math.round(current.temperature_2m) + "°C";
         document.getElementById('feels-like').textContent = "Feels " + Math.round(current.apparent_temperature) + "°C";
         document.getElementById('humidity').textContent = "Humidity " + current.relative_humidity_2m + "%";
+        document.getElementById('humidity-icon').innerHTML = '<div class="drop" style="animation: none; transform: scale(1.5); opacity: 1;"></div>';
         document.getElementById('location').textContent = state.weatherLocation;
 
-        const weatherMap = { 0: ['☀️', 'Clear sky'], 1: ['🌤️', 'Mainly clear'], 2: ['⛅', 'Partly cloudy'], 3: ['☁️', 'Overcast'], 45: ['🌫️', 'Fog'], 61: ['🌧️', 'Rain'], 95: ['⛈️', 'Storm'] };
-        const [icon, desc] = weatherMap[current.weather_code] || ['⛅', 'Cloudy'];
-        document.getElementById('weather-icon-large').textContent = icon;
+        const weatherMap = { 
+            0: ['icon-clear', 'Clear sky'], 
+            1: ['icon-mainly-clear', 'Mainly clear'], 
+            2: ['icon-partly-cloudy', 'Partly cloudy'], 
+            3: ['icon-overcast', 'Overcast'], 
+            45: ['icon-fog', 'Fog'], 
+            61: ['icon-rain', 'Rain'], 
+            95: ['icon-storm', 'Storm'] 
+        };
+        const [iconClass, desc] = weatherMap[current.weather_code] || ['icon-partly-cloudy', 'Cloudy'];
+        
+        document.getElementById('weather-icon-large').innerHTML = getWeatherIconHTML(iconClass);
         document.getElementById('weather-desc').textContent = desc;
     } catch (error) {
         console.error("Weather error:", error);
     }
 }
 
+function getWeatherIconHTML(type) {
+    const sun = '<div class="sun"></div>';
+    const cloud = '<div class="cloud"></div>';
+    const rain = '<div class="rain-drops"><div class="drop"></div><div class="drop"></div><div class="drop"></div></div>';
+    const lightning = '<div class="lightning"></div>';
+    const fog = '<div class="fog-lines"><div class="fog-line"></div><div class="fog-line"></div><div class="fog-line"></div></div>';
+
+    let content = '';
+    switch(type) {
+        case 'icon-clear': content = sun; break;
+        case 'icon-mainly-clear': content = sun + cloud; break;
+        case 'icon-partly-cloudy': content = sun + cloud; break;
+        case 'icon-overcast': content = cloud; break;
+        case 'icon-fog': content = cloud + fog; break;
+        case 'icon-rain': content = cloud + rain; break;
+        case 'icon-storm': content = cloud + lightning; break;
+        default: content = cloud;
+    }
+    return `<div class="weather-icon ${type}">${content}</div>`;
+}
+
 async function searchLocation(query) {
     try {
-        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
-        const results = await res.json();
-        if (results && results.length > 0) {
-            const place = results[0];
-            state.lat = parseFloat(place.lat);
-            state.lon = parseFloat(place.lon);
-            state.weatherLocation = place.display_name.split(',')[0];
-            state.timezone = "auto"; 
+        const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=en&format=json`);
+        const data = await res.json();
+        if (data.results && data.results.length > 0) {
+            const place = data.results[0];
+            state.lat = place.latitude;
+            state.lon = place.longitude;
+            state.weatherLocation = place.name + (place.admin1 ? `, ${place.admin1}` : '');
+            state.timezone = place.timezone; // This ensures the clock syncs to local time
             saveState();
             updateWeather();
             applyState();
