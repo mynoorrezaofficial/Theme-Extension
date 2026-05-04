@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Tab</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="bg-overlay"></div>
+    <div id="main-container">
+        <!-- Left Side: Clock & Greeting -->
+        <div id="character-container">
+            <!-- Analog Clock Widget -->
+            <div class="widget clock-widget" id="analog-clock">
+                <div class="clock-face">
+                    <div class="hand hour-hand"></div>
+                    <div class="hand minute-hand"></div>
+                    <div class="center-pin"></div>
+                </div>
+            </div>
+            
+            <!-- Digital Clock Widget -->
+            <div id="digital-clock" class="hidden">
+                <h1 id="digital-time">00:00</h1>
+            </div>
+
+            <div id="greeting-wrapper">
+                <div class="info-pill" id="greeting-pill">
+                    <h2 id="greeting">Hello</h2>
+                </div>
+                <div class="info-pill" id="date-pill">
+                    <p id="date">Mon, May 4</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Widgets -->
+        <div id="widgets-container">
+            <div class="top-widgets">
+                <!-- Weather Info Widget -->
+                <div class="widget weather-info-widget">
+                    <p id="weather-desc">Loading weather...</p>
+                    <div class="weather-row">
+                        <div class="weather-pill">Humidity <span id="humidity">--%</span></div>
+                        <div class="weather-icon-small">💧</div>
+                    </div>
+                    <div class="weather-details">
+                        <span class="detail-pill" id="feels-like">Feels --°C</span>
+                        <span class="detail-pill" id="location">Location</span>
+                    </div>
+                </div>
+
+                <!-- Temperature Widget -->
+                <div class="widget temp-widget">
+                    <h1 id="temp">--°C</h1>
+                    <div id="weather-icon-large">☁️</div>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-section">
+                <div class="search-bar-container">
+                    <div class="search-icon"></div>
+                    <input type="text" id="search-input" placeholder="Type here..." autofocus>
+                    <div class="mic-icon">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                        </svg>
+                    </div>
+                    <button id="search-btn">Search</button>
+                </div>
+
+                <!-- Search Engine Selection -->
+                <div class="search-engines">
+                    <span class="search-label">Search With</span>
+                    <div class="engine-options">
+                        <button class="engine-opt active" data-engine="google">Google</button>
+                        <button class="engine-opt" data-engine="bing">Bing</button>
+                        <button class="engine-opt" data-engine="duckduckgo">DuckDuckGo</button>
+                        <button class="engine-opt" data-engine="brave">Brave</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Button (Bottom Right) -->
+    <div id="settings-btn">⚙️</div>
+
+    <!-- Settings Modal (Sidebar) -->
+    <div id="settings-modal" class="hidden">
+        <div class="settings-panel">
+            <div class="settings-header">
+                <h3>Settings</h3>
+                <div id="close-settings" class="close-icon">✕</div>
+            </div>
+
+            <div class="settings-scroll-area">
+                <!-- Appearance Section -->
+                <div class="settings-section">
+                    <div class="section-header" data-target="appearance-panel">
+                        <span>Appearance</span>
+                        <span class="chevron">▲</span>
+                    </div>
+                    <div id="appearance-panel" class="section-panel">
+                        <div class="setting-item">
+                            <div class="mode-selector">
+                                <button class="mode-btn" data-mode="light">Light</button>
+                                <button class="mode-btn active" data-mode="dark">Dark</button>
+                                <button class="mode-btn" data-mode="system">System</button>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="color-picker-container">
+                                <div class="palette-icon">Color</div>
+                                <div class="color-options">
+                                    <div class="color-dot" style="background: #ff6b6b;" data-color="#ff6b6b"></div>
+                                    <div class="color-dot" style="background: #f0932b;" data-color="#f0932b"></div>
+                                    <div class="color-dot" style="background: #2ecc71;" data-color="#2ecc71"></div>
+                                    <div class="color-dot" style="background: #00cec9;" data-color="#00cec9"></div>
+                                    <div class="color-dot" style="background: #0984e3;" data-color="#0984e3"></div>
+                                    <div class="color-dot" style="background: #a29bfe;" data-color="#a29bfe"></div>
+                                    <div class="color-dot" style="background: #000000;" data-color="#000000"></div>
+                                    <div class="color-dot" style="background: #ffffff;" data-color="#ffffff"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="setting-item vertical">
+                            <label>Wallpaper</label>
+                            <div class="wallpaper-actions">
+                                <button id="open-presets-btn" class="action-btn">Choose Image</button>
+                                <label class="action-btn upload-btn">
+                                    Upload Image
+                                    <input type="file" id="bg-upload-input" accept="image/*">
+                                </label>
+                            </div>
+                            <!-- Hidden Grid -->
+                            <div id="presets-grid" class="wallpaper-presets hidden">
+                                <div class="preset-thumb" data-bg="bg1.png"><img src="bg1.png" alt="P1"></div>
+                                <div class="preset-thumb" data-bg="bg2.png"><img src="bg2.png" alt="P2"></div>
+                                <div class="preset-thumb" data-bg="bg3.png"><img src="bg3.png" alt="P3"></div>
+                                <div class="preset-thumb" data-bg="icon.png"><img src="icon.png" alt="Default"></div>
+                            </div>
+                        </div>
+                        <div class="setting-item vertical">
+                            <label>Opacity</label>
+                            <p class="setting-desc">Adjust interface transparency</p>
+                            <div class="slider-container">
+                                <input type="range" id="opacity-slider" min="50" max="100" value="100">
+                                <span id="opacity-val">100%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Section -->
+                <div class="settings-section">
+                    <div class="section-header" data-target="search-panel">
+                        <span>Search</span>
+                        <span class="chevron">▲</span>
+                    </div>
+                    <div id="search-panel" class="section-panel">
+                        <div class="setting-item">
+                            <div>
+                                <p>Hide Microphone Icon</p>
+                                <p class="setting-desc">Remove mic from search bar</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="hide-mic-toggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div>
+                                <p>Hide Search Engines</p>
+                                <p class="setting-desc">Hide engine selection pills</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="hide-engines-toggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clock Section -->
+                <div class="settings-section">
+                    <div class="section-header" data-target="clock-panel">
+                        <span>Clock</span>
+                        <span class="chevron">▲</span>
+                    </div>
+                    <div id="clock-panel" class="section-panel">
+                        <div class="setting-item">
+                            <div>
+                                <p>Hide Clock</p>
+                                <p class="setting-desc">Hide the entire clock area</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="hide-clock-toggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div>
+                                <p>Digital Clock</p>
+                                <p class="setting-desc">Switch to digital time</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="digital-clock-toggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div>
+                                <p>12-Hour Format</p>
+                                <p class="setting-desc">Use AM/PM for digital clock</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="12hr-toggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
