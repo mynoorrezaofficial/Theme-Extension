@@ -2,7 +2,7 @@
 
 A premium, highly customizable Chrome New Tab extension featuring glassmorphism design, dynamic themes, and integrated productivity widgets.
 
-![Preview](icon.png)
+![Preview](assets/Preview_demo.png)
 
 ## ✨ Features
 
@@ -46,12 +46,14 @@ A premium, highly customizable Chrome New Tab extension featuring glassmorphism 
 - `newtab.html`: Main extension structure.
 - `styles.css`: Full design system and animations.
 - `script.js`: Core logic, state, and event handling.
-- `icon.png`: Default background and extension icon.
-- `bg1-3.png`: Preset wallpapers.
+- `assets/`: Contains wallpapers and icons.
+  - `icon.png`: Default background and extension icon.
+  - `bg1-3.png`: Preset wallpapers.
+  - `Preview_demo.png`: Repository preview image.
 
 ## 📄 License
 
 This project is open-source. Feel free to customize it to your liking!
 
 ---
-Developed with ❤️ by [Your Name/Handle]
+Developed by Mynoor Reza

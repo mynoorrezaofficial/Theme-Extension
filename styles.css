@@ -43,7 +43,7 @@ body.light {
 
 body {
     background-color: var(--bg-color);
-    background-image: url('icon.png'); /* Default */
+    background-image: url('assets/icon.png'); /* Default */
     color: var(--text-color);
     height: 100vh;
     width: 100vw;

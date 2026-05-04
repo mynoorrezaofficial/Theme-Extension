@@ -1,7 +1,7 @@
 // State management
 let state = {
     searchEngine: 'google',
-    bgImage: 'icon.png',
+    bgImage: 'assets/icon.png',
     themeMode: 'dark',
     accentColor: '#a0a0ff',
     opacity: 100,
