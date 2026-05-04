@@ -1,6 +1,6 @@
 :root {
-    --accent-color: #a0a0ff;
-    --glass-accent-bg: rgba(160, 160, 255, 0.2); /* Dynamic from accent */
+    --accent-color: #f0932b;
+    --glass-accent-bg: rgba(240, 147, 43, 0.2); /* Dynamic from accent */
     --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 

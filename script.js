@@ -3,7 +3,7 @@ let state = {
     searchEngine: 'google',
     bgImage: 'assets/icon.png',
     themeMode: 'dark',
-    accentColor: '#a0a0ff',
+    accentColor: '#f0932b',
     opacity: 100,
     hideMic: false,
     hideEngines: false,
