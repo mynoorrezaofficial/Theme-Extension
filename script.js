@@ -5,9 +5,11 @@ let state = {
     themeMode: 'dark',
     accentColor: '#f0932b',
     opacity: 100,
-    hideMic: false,
+    weatherLocation: 'Dhaka',
+    lat: 23.81,
+    lon: 90.41,
+    timezone: 'Asia/Dhaka',
     hideEngines: false,
-    hideClock: false,
     isDigital: false,
     is12hr: true
 };
@@ -24,13 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadState();
     updateClock();
     setInterval(updateClock, 1000);
-    updateWeather();
     setupEventListeners();
-    
-    // Listen for system theme changes
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-        if (state.themeMode === 'system') applyState();
-    });
 });
 
 function loadState() {
@@ -39,80 +35,49 @@ function loadState() {
             if (result[key] !== undefined) state[key] = result[key];
         }
         applyState();
+        updateWeather();
     });
 }
 
 function applyState() {
-    // Background
     applyBackground(state.bgImage);
+    document.body.className = state.themeMode === 'system' ? 
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : state.themeMode;
     
-    // Theme logic
-    let activeTheme = state.themeMode;
-    if (activeTheme === 'system') {
-        activeTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-    document.body.className = activeTheme;
-    
-    // Accent logic
     document.documentElement.style.setProperty('--accent-color', state.accentColor);
-    // Create a transparent version of accent color for glass effect
     const glassColor = state.accentColor.startsWith('#') ? state.accentColor + '33' : state.accentColor;
     document.documentElement.style.setProperty('--glass-accent-bg', glassColor);
     
-    // Opacity
     const container = document.getElementById('main-container');
-    const currentOpacity = Math.max(state.opacity || 100, 50);
-    if (container) container.style.opacity = currentOpacity / 100;
-    
-    const slider = document.getElementById('opacity-slider');
-    if (slider) slider.value = currentOpacity;
-    
-    const opacityVal = document.getElementById('opacity-val');
-    if (opacityVal) opacityVal.textContent = `${currentOpacity}%`;
+    if (container) container.style.opacity = (state.opacity || 100) / 100;
 
-    // Toggles UI
-    const updateToggle = (id, val) => {
+    const locInput = document.getElementById('weather-location-input');
+    if (locInput) locInput.value = state.weatherLocation;
+
+    // Sync Toggles - only set value, don't trigger events
+    const toggleSync = (id, val) => {
         const el = document.getElementById(id);
         if (el) el.checked = !!val;
     };
-    updateToggle('hide-mic-toggle', state.hideMic);
-    updateToggle('hide-engines-toggle', state.hideEngines);
-    updateToggle('hide-clock-toggle', state.hideClock);
-    updateToggle('digital-clock-toggle', state.isDigital);
-    updateToggle('12hr-toggle', state.is12hr);
+    toggleSync('hide-engines-toggle', state.hideEngines);
+    toggleSync('digital-clock-toggle', state.isDigital);
+    toggleSync('12hr-toggle', state.is12hr);
 
     // Visibility
-    const toggleClass = (selector, isHidden) => {
-        const el = document.querySelector(selector);
-        if (el) el.classList.toggle('hidden', !!isHidden);
-    };
-    
-    toggleClass('.mic-icon', state.hideMic);
-    toggleClass('.search-engines', state.hideEngines);
-    toggleClass('#character-container', state.hideClock);
+    const engineSection = document.querySelector('.search-engines');
+    if (engineSection) engineSection.style.display = state.hideEngines ? 'none' : 'flex';
     
     const analog = document.getElementById('analog-clock');
     const digital = document.getElementById('digital-clock');
     if (analog && digital) {
-        if (state.hideClock) {
-            analog.classList.add('hidden');
-            digital.classList.add('hidden');
-        } else {
-            analog.classList.toggle('hidden', !!state.isDigital);
-            digital.classList.toggle('hidden', !state.isDigital);
-        }
+        analog.classList.toggle('hidden', !!state.isDigital);
+        digital.classList.toggle('hidden', !state.isDigital);
     }
 
-    // Engine Selection
     setActiveEngine(state.searchEngine);
     
-    // Settings UI highlights
-    document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.mode === state.themeMode);
-    });
-    document.querySelectorAll('.color-dot').forEach(dot => {
-        dot.classList.toggle('active', dot.dataset.color === state.accentColor);
-    });
+    document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.mode === state.themeMode));
+    document.querySelectorAll('.color-dot').forEach(dot => dot.classList.toggle('active', dot.dataset.color === state.accentColor));
 }
 
 function saveState() {
@@ -121,232 +86,141 @@ function saveState() {
 
 function updateClock() {
     const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
+    const localizedDate = new Date(now.toLocaleString('en-US', { timeZone: state.timezone || 'Asia/Dhaka' }));
+    const hours = localizedDate.getHours();
+    const minutes = localizedDate.getMinutes();
     
-    // Analog
-    const hourDeg = (hours % 12) * 30 + minutes * 0.5;
-    const minDeg = minutes * 6;
     const hHand = document.querySelector('.hour-hand');
     const mHand = document.querySelector('.minute-hand');
-    if (hHand) hHand.style.transform = `translateX(-50%) rotate(${hourDeg}deg)`;
-    if (mHand) mHand.style.transform = `translateX(-50%) rotate(${minDeg}deg)`;
+    if (hHand) hHand.style.transform = `translateX(-50%) rotate(${(hours % 12) * 30 + minutes * 0.5}deg)`;
+    if (mHand) mHand.style.transform = `translateX(-50%) rotate(${minutes * 6}deg)`;
 
-    // Digital
     const dTime = document.getElementById('digital-time');
     if (dTime) {
-        let h = hours;
-        let ampm = '';
-        if (state.is12hr) {
-            ampm = hours >= 12 ? ' PM' : ' AM';
-            h = hours % 12 || 12;
-        }
+        let h = state.is12hr ? (hours % 12 || 12) : hours;
+        let ampm = state.is12hr ? (hours >= 12 ? ' PM' : ' AM') : '';
         dTime.textContent = `${h}:${minutes.toString().padStart(2, '0')}${ampm}`;
     }
 
-    // Greeting & Date
-    const greetingEl = document.getElementById('greeting');
     const dateEl = document.getElementById('date');
-    if (greetingEl) {
-        if (hours < 12) greetingEl.textContent = 'Good Morning';
-        else if (hours < 18) greetingEl.textContent = 'Good Afternoon';
-        else greetingEl.textContent = 'Good Evening';
-    }
-    if (dateEl) {
-        const options = { weekday: 'short', month: 'short', day: 'numeric' };
-        dateEl.textContent = now.toLocaleDateString('en-US', options);
-    }
+    if (dateEl) dateEl.textContent = localizedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: state.timezone });
 }
 
 async function updateWeather() {
-    try {
-        const response = await fetch('https://wttr.in/?format=j1');
-        const data = await response.json();
-        const current = data.current_condition[0];
-        
-        const updateText = (id, text) => {
-            const el = document.getElementById(id);
-            if (el) el.textContent = text;
-        };
+    const lat = state.lat || 23.81;
+    const lon = state.lon || 90.41;
+    const timezone = state.timezone || "Asia/Dhaka";
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code&timezone=${encodeURIComponent(timezone)}`;
 
-        updateText('temp', `${current.temp_C}°C`);
-        updateText('weather-desc', current.weatherDesc[0].value);
-        updateText('humidity', `${current.humidity}%`);
-        updateText('feels-like', `Feels ${current.FeelsLikeC}°C`);
-        updateText('location', data.nearest_area[0].areaName[0].value);
-        
-        const iconMap = { 'Clear': '☀️', 'Cloudy': '☁️', 'Partly cloudy': '⛅', 'Rain': '🌧️', 'Showers': '🌦️' };
-        updateText('weather-icon-large', iconMap[current.weatherDesc[0].value] || '⛅');
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const current = data.current;
+
+        document.getElementById('temp').textContent = Math.round(current.temperature_2m) + "°C";
+        document.getElementById('feels-like').textContent = "Feels " + Math.round(current.apparent_temperature) + "°C";
+        document.getElementById('humidity').textContent = "Humidity " + current.relative_humidity_2m + "%";
+        document.getElementById('location').textContent = state.weatherLocation;
+
+        const weatherMap = { 0: ['☀️', 'Clear sky'], 1: ['🌤️', 'Mainly clear'], 2: ['⛅', 'Partly cloudy'], 3: ['☁️', 'Overcast'], 45: ['🌫️', 'Fog'], 61: ['🌧️', 'Rain'], 95: ['⛈️', 'Storm'] };
+        const [icon, desc] = weatherMap[current.weather_code] || ['⛅', 'Cloudy'];
+        document.getElementById('weather-icon-large').textContent = icon;
+        document.getElementById('weather-desc').textContent = desc;
+    } catch (error) {
+        console.error("Weather error:", error);
+    }
+}
+
+async function searchLocation(query) {
+    try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
+        const results = await res.json();
+        if (results && results.length > 0) {
+            const place = results[0];
+            state.lat = parseFloat(place.lat);
+            state.lon = parseFloat(place.lon);
+            state.weatherLocation = place.display_name.split(',')[0];
+            state.timezone = "auto"; 
+            saveState();
+            updateWeather();
+            applyState();
+        }
     } catch (e) {
-        console.error('Weather error:', e);
+        console.error("Location search error:", e);
     }
 }
 
 function setupEventListeners() {
-    // Search
     const searchInput = document.getElementById('search-input');
-    const searchBtn = document.getElementById('search-btn');
     const doSearch = () => {
         if (searchInput && searchInput.value.trim()) {
             window.location.href = engines[state.searchEngine] + encodeURIComponent(searchInput.value.trim());
         }
     };
-    if (searchBtn) searchBtn.addEventListener('click', doSearch);
+    document.getElementById('search-btn').addEventListener('click', doSearch);
     if (searchInput) searchInput.addEventListener('keypress', (e) => e.key === 'Enter' && doSearch());
 
-    // Voice Search
     const micIcon = document.querySelector('.mic-icon');
     if (micIcon && ('webkitSpeechRecognition' in window)) {
         const recognition = new webkitSpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = false;
-        recognition.lang = 'en-US';
-
-        recognition.onstart = () => {
-            micIcon.classList.add('listening');
-        };
-
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            if (searchInput) {
-                searchInput.value = transcript;
-                doSearch();
-            }
-        };
-
-        recognition.onend = () => {
-            micIcon.classList.remove('listening');
-        };
-
-        micIcon.addEventListener('click', () => {
-            try {
-                recognition.start();
-            } catch (e) {
-                console.error("Speech recognition error:", e);
-            }
-        });
+        recognition.onresult = (event) => { searchInput.value = event.results[0][0].transcript; doSearch(); };
+        micIcon.addEventListener('click', () => recognition.start());
     }
 
-    // Settings
-    const settingsBtn = document.getElementById('settings-btn');
     const settingsModal = document.getElementById('settings-modal');
-    const closeSettings = document.getElementById('close-settings');
-    if (settingsBtn) settingsBtn.addEventListener('click', () => settingsModal.classList.remove('hidden'));
-    if (closeSettings) closeSettings.addEventListener('click', () => settingsModal.classList.add('hidden'));
-    if (settingsModal) {
-        settingsModal.addEventListener('click', (e) => {
-            if (e.target === settingsModal) settingsModal.classList.add('hidden');
-        });
-    }
+    document.getElementById('settings-btn').addEventListener('click', () => settingsModal.classList.remove('hidden'));
+    document.getElementById('close-settings').addEventListener('click', () => settingsModal.classList.add('hidden'));
+    settingsModal.addEventListener('click', (e) => {
+        if (e.target === settingsModal) settingsModal.classList.add('hidden');
+    });
 
-    // Accordions
     document.querySelectorAll('.section-header').forEach(header => {
         header.addEventListener('click', () => {
             const panel = document.getElementById(header.dataset.target);
-            const chevron = header.querySelector('.chevron');
-            if (panel) {
-                panel.classList.toggle('collapsed');
-                if (chevron) chevron.textContent = panel.classList.contains('collapsed') ? '▼' : '▲';
-            }
+            if (panel) panel.classList.toggle('collapsed');
         });
     });
 
-    // Theme Mode
-    document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            state.themeMode = btn.dataset.mode;
-            applyState();
-            saveState();
-        });
-    });
+    document.querySelectorAll('.mode-btn').forEach(btn => btn.addEventListener('click', () => { state.themeMode = btn.dataset.mode; applyState(); saveState(); }));
+    document.querySelectorAll('.color-dot').forEach(dot => dot.addEventListener('click', () => { state.accentColor = dot.dataset.color; applyState(); saveState(); }));
+    document.getElementById('opacity-slider').addEventListener('input', (e) => { state.opacity = e.target.value; applyState(); saveState(); });
 
-    // Color Palette
-    document.querySelectorAll('.color-dot').forEach(dot => {
-        dot.addEventListener('click', () => {
-            state.accentColor = dot.dataset.color;
-            applyState();
-            saveState();
-        });
-    });
+    const locInput = document.getElementById('weather-location-input');
+    const setLocBtn = document.getElementById('set-location-btn');
+    if (setLocBtn) setLocBtn.addEventListener('click', () => searchLocation(locInput.value));
+    if (locInput) locInput.addEventListener('keypress', (e) => e.key === 'Enter' && searchLocation(locInput.value));
 
-    // Opacity
-    const slider = document.getElementById('opacity-slider');
-    if (slider) {
-        slider.addEventListener('input', (e) => {
-            state.opacity = e.target.value;
-            applyState();
-            saveState();
-        });
-    }
-
-    // Toggles
+    // Toggles logic
     const setupToggle = (id, key) => {
         const el = document.getElementById(id);
         if (el) {
             el.addEventListener('change', (e) => {
                 state[key] = e.target.checked;
-                applyState();
                 saveState();
+                applyState();
             });
         }
     };
-    setupToggle('hide-mic-toggle', 'hide-mic');
     setupToggle('hide-engines-toggle', 'hide-engines');
-    setupToggle('hide-clock-toggle', 'hide-clock');
     setupToggle('digital-clock-toggle', 'isDigital');
     setupToggle('12hr-toggle', 'is12hr');
 
-    // Wallpaper Presets Toggle
-    const openPresetsBtn = document.getElementById('open-presets-btn');
-    const presetsGrid = document.getElementById('presets-grid');
-    if (openPresetsBtn && presetsGrid) {
-        openPresetsBtn.addEventListener('click', () => {
-            presetsGrid.classList.toggle('hidden');
-        });
-    }
+    document.getElementById('open-presets-btn').addEventListener('click', () => document.getElementById('presets-grid').classList.toggle('hidden'));
+    document.querySelectorAll('.preset-thumb').forEach(thumb => thumb.addEventListener('click', () => {
+        state.bgImage = thumb.dataset.bg; applyBackground(state.bgImage); saveState();
+    }));
 
-    document.querySelectorAll('.preset-thumb').forEach(thumb => {
-        thumb.addEventListener('click', () => {
-            state.bgImage = thumb.dataset.bg;
-            applyBackground(state.bgImage);
-            saveState();
-            
-            document.querySelectorAll('.preset-thumb').forEach(t => t.classList.remove('active'));
-            thumb.classList.add('active');
-        });
+    document.getElementById('bg-upload-input').addEventListener('change', (e) => {
+        const reader = new FileReader();
+        reader.onload = (event) => { state.bgImage = event.target.result; applyBackground(state.bgImage); saveState(); };
+        reader.readAsDataURL(e.target.files[0]);
     });
 
-    // Background Upload
-    const bgInput = document.getElementById('bg-upload-input');
-    if (bgInput) {
-        bgInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    state.bgImage = event.target.result;
-                    applyBackground(state.bgImage);
-                    saveState();
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
-
-    // Engine Selection
-    document.querySelectorAll('.engine-opt').forEach(btn => {
-        btn.addEventListener('click', () => {
-            state.searchEngine = btn.dataset.engine;
-            setActiveEngine(state.searchEngine);
-            saveState();
-        });
-    });
+    document.querySelectorAll('.engine-opt').forEach(btn => btn.addEventListener('click', () => { state.searchEngine = btn.dataset.engine; setActiveEngine(state.searchEngine); saveState(); }));
 }
 
 function setActiveEngine(engine) {
-    document.querySelectorAll('.engine-opt').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.engine === engine);
-    });
+    document.querySelectorAll('.engine-opt').forEach(btn => btn.classList.toggle('active', btn.dataset.engine === engine));
 }
 
 function applyBackground(bg) {
