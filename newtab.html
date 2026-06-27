@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
     <div id="bg-overlay"></div>
@@ -224,5 +225,139 @@
     </div>
 
     <script src="script.js"></script>
+
+    <!-- Apps menu button -->
+    <div id="apps-button">
+        <svg viewBox="0 0 24 24" width="40" height="40" class="apps-icon">
+            <path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/>
+        </svg>
+    </div>
+
+    <!-- Apps menu popup -->
+    <div class="apps-popup hidden">
+        <div class="apps-header">
+            <span class="apps-title">Your favorites</span>
+            <button class="apps-edit-btn" title="Edit shortcuts">
+                <svg viewBox="0 0 24 24" width="16" height="16">
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="favorites-container">
+            <div class="apps-grid">
+                <!-- Account -->
+                <a class="app-item" title="Google Account" href="https://myaccount.google.com/" target="_blank">
+                    <div class="app-icon"><img src="assets/account.svg" alt="Account" style="border-radius: 50%;"></div>
+                    <span class="app-label">Account</span>
+                </a>
+                <!-- Gmail -->
+                <a class="app-item" title="Gmail" href="https://mail.google.com/" target="_blank">
+                    <div class="app-icon"><img src="assets/gmail.svg" alt="Gmail"></div>
+                    <span class="app-label">Gmail</span>
+                </a>
+                <!-- Drive -->
+                <a class="app-item" title="Google Drive" href="https://drive.google.com/" target="_blank">
+                    <div class="app-icon"><img src="assets/drive.svg" alt="Drive"></div>
+                    <span class="app-label">Drive</span>
+                </a>
+                <!-- Classroom -->
+                <a class="app-item" title="Google Classroom" href="https://classroom.google.com/" target="_blank">
+                    <div class="app-icon"><img src="assets/classroom.svg" alt="Classroom"></div>
+                    <span class="app-label">Classroom</span>
+                </a>
+                <!-- Docs -->
+                <a class="app-item" title="Google Docs" href="https://docs.google.com/" target="_blank">
+                    <div class="app-icon"><img src="assets/docs.svg" alt="Docs"></div>
+                    <span class="app-label">Docs</span>
+                </a>
+                <!-- Gemini -->
+                <a class="app-item" title="Google Gemini" href="https://gemini.google.com/" target="_blank">
+                    <div class="app-icon"><img src="assets/gemini.svg" alt="Gemini"></div>
+                    <span class="app-label">Gemini</span>
+                </a>
+                <!-- Sheets -->
+                <a class="app-item" title="Google Sheets" href="https://sheets.google.com/" target="_blank">
+                    <div class="app-icon"><img src="assets/sheets.svg" alt="Sheets"></div>
+                    <span class="app-label">Sheets</span>
+                </a>
+                <!-- Calendar -->
+                <a class="app-item" title="Google Calendar" href="https://calendar.google.com/" target="_blank">
+                    <div class="app-icon"><img src="assets/calendar.svg" alt="Calendar"></div>
+                    <span class="app-label">Calendar</span>
+                </a>
+                <!-- Photos -->
+                <a class="app-item" title="Google Photos" href="https://photos.google.com/" target="_blank">
+                    <div class="app-icon"><img src="assets/photo.svg" alt="Photos"></div>
+                    <span class="app-label">Photos</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="more-apps-container">
+            <div class="apps-grid">
+                <!-- Chat -->
+                <a class="app-item" title="Google Chat" href="https://chat.google.com/" target="_blank">
+                    <div class="app-icon"><img src="assets/chat.svg" alt="Chat"></div>
+                    <span class="app-label">Chat</span>
+                </a>
+                <!-- Meet -->
+                <a class="app-item" title="Google Meet" href="https://meet.google.com/" target="_blank">
+                    <div class="app-icon"><img src="assets/meet.svg" alt="Meet"></div>
+                    <span class="app-label">Meet</span>
+                </a>
+                <!-- Vids -->
+                <a class="app-item" title="Google Vids" href="https://workspace.google.com/products/vids/" target="_blank">
+                    <div class="app-icon"><img src="assets/vids.svg" alt="Vids"></div>
+                    <span class="app-label">Vids</span>
+                </a>
+                <!-- Forms -->
+                <a class="app-item" title="Google Forms" href="https://docs.google.com/forms/" target="_blank">
+                    <div class="app-icon"><img src="assets/forms.svg" alt="Forms"></div>
+                    <span class="app-label">Forms</span>
+                </a>
+                <!-- Groups -->
+                <a class="app-item" title="Google Groups" href="https://groups.google.com/" target="_blank">
+                    <div class="app-icon"><img src="assets/groups.svg" alt="Groups"></div>
+                    <span class="app-label">Groups</span>
+                </a>
+                <!-- Maps -->
+                <a class="app-item" title="Google Maps" href="https://maps.google.com/" target="_blank">
+                    <div class="app-icon"><img src="assets/maps.svg" alt="Maps"></div>
+                    <span class="app-label">Maps</span>
+                </a>
+                <!-- Slides -->
+                <a class="app-item" title="Google Slides" href="https://docs.google.com/presentation/" target="_blank">
+                    <div class="app-icon"><img src="assets/slides.svg" alt="Slides"></div>
+                    <span class="app-label">Slides</span>
+                </a>
+                <!-- Translate -->
+                <a class="app-item" title="Google Translate" href="https://translate.google.com/" target="_blank">
+                    <div class="app-icon"><img src="assets/translate.svg" alt="Translate"></div>
+                    <span class="app-label">Translate</span>
+                </a>
+                <!-- Keep -->
+                <a class="app-item" title="Google Keep" href="https://keep.google.com/" target="_blank">
+                    <div class="app-icon"><img src="assets/keep.svg" alt="Keep"></div>
+                    <span class="app-label">Keep</span>
+                </a>
+                <!-- Tasks -->
+                <a class="app-item" title="Google Tasks" href="https://tasks.google.com/" target="_blank">
+                    <div class="app-icon"><img src="assets/tasks.svg" alt="Tasks"></div>
+                    <span class="app-label">Tasks</span>
+                </a>
+                <!-- Earth -->
+                <a class="app-item" title="Google Earth" href="https://earth.google.com/" target="_blank">
+                    <div class="app-icon"><img src="assets/earth.svg" alt="Earth"></div>
+                    <span class="app-label">Earth</span>
+                </a>
+                <!-- Notebook -->
+                <a class="app-item" title="NotebookLM" href="https://notebooklm.google.com/" target="_blank">
+                    <div class="app-icon"><img src="assets/notebook.svg" alt="Notebook"></div>
+                    <span class="app-label">Notebook</span>
+                </a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

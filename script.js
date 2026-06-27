@@ -199,7 +199,11 @@ function setupEventListeners() {
     }
 
     const settingsModal = document.getElementById('settings-modal');
-    document.getElementById('settings-btn').addEventListener('click', () => settingsModal.classList.remove('hidden'));
+    document.getElementById('settings-btn').addEventListener('click', () => {
+        settingsModal.classList.remove('hidden');
+        const appsPopup = document.querySelector('.apps-popup');
+        if (appsPopup) appsPopup.classList.add('hidden');
+    });
     document.getElementById('close-settings').addEventListener('click', () => settingsModal.classList.add('hidden'));
     settingsModal.addEventListener('click', (e) => {
         if (e.target === settingsModal) settingsModal.classList.add('hidden');
@@ -248,6 +252,20 @@ function setupEventListeners() {
     });
 
     document.querySelectorAll('.engine-opt').forEach(btn => btn.addEventListener('click', () => { state.searchEngine = btn.dataset.engine; setActiveEngine(state.searchEngine); saveState(); }));
+
+    // 3-dot menu toggle functionality
+    const appsButton = document.getElementById('apps-button');
+    const appsPopup = document.querySelector('.apps-popup');
+
+    appsButton.addEventListener('click', () => {
+        appsPopup.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!appsButton.contains(event.target) && !appsPopup.contains(event.target)) {
+            appsPopup.classList.add('hidden');
+        }
+    });
 }
 
 function setActiveEngine(engine) {
